@@ -1,13 +1,11 @@
 import logging
 from dotenv import load_dotenv
-from connector import SnowflakeConnector
+from src.base.connector import SnowflakeConnector, get_resource_manager
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 class StageManager:
-    def __init__(self, connector: 'SnowflakeConnector', stage_name: str = "docs"):
-        self.connector = connector
+    def __init__(self, stage_name: str = "docs"):
+        self.connector = get_resource_manager()
         self.stage_name = stage_name
         self.logger = logging.getLogger(__name__)
 
@@ -28,8 +26,6 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"Stage creation failed: {str(e)}")
             return False
-        finally:
-            self.connector.close()
 
     def upload_file(self, file_path) -> bool:
         try:
@@ -43,26 +39,19 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"Upload failed: {str(e)}")
             return False
-        finally:
-            self.connector.close()
 
     def list_files(self) -> list:
         try:
-            self.connector.connect()
             return self.connector.session.sql(f"LIST @{self.stage_name}").collect()
         except Exception as e:
             self.logger.error(f"Listing files failed: {str(e)}")
             return []
-        finally:
-            self.connector.close()
-
     def stage_exists(self) -> bool:
         """
         Check if the stage exists in Snowflake.
         Returns True if the stage exists, False otherwise.
         """
         try:
-            self.connector.connect()
             result = self.connector.session.sql(f"""
                 SELECT COUNT(*) as count 
                 FROM INFORMATION_SCHEMA.STAGES 
@@ -73,8 +62,6 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"Stage existence check failed: {str(e)}")
             return False
-        finally:
-            self.connector.close()
 
     def remove_file(self, file_name: str) -> bool:
         """
@@ -85,7 +72,6 @@ class StageManager:
             bool: True if removal successful, False otherwise
         """
         try:
-            self.connector.connect()
             self.connector.session.sql(f"""
                 REMOVE @{self.stage_name}/{file_name}
             """).collect()
@@ -93,8 +79,6 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"File removal failed: {str(e)}")
             return False
-        finally:
-            self.connector.close()
 
     def remove_all_files(self) -> bool:
         """
@@ -111,8 +95,6 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"Removing all files failed: {str(e)}")
             return False
-        finally:
-            self.connector.close()
 
 
 if __name__ == "__main__":

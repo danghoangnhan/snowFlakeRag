@@ -1,15 +1,18 @@
 import json
 import os
+import streamlit as st
 from typing import Dict, Optional
-from dotenv import load_dotenv
 from snowflake.snowpark import Session
 from snowflake.core import Root
 from snowflake.snowpark.exceptions import SnowparkSQLException
 import logging
 
+
 class SnowflakeConnector:
     """A utility class to manage Snowflake connections with proper error handling"""
     
+    _instance = None
+
     def __init__(self, config: Optional[Dict] = None):
         """
         Initialize the Snowflake connector with either provided config or environment variables
@@ -20,8 +23,8 @@ class SnowflakeConnector:
         self.logger = logging.getLogger(__name__)
         self.session = None
         self.config = config or self._get_config_from_env()
-        
-         
+        self.connect()    
+
         
     def _get_config_from_env(self) -> Dict:
         """Retrieve configuration from environment variables"""
@@ -65,16 +68,9 @@ class SnowflakeConnector:
                 self.logger.info("Snowflake connection closed successfully")
             except Exception as e:
                 self.logger.error(f"Error closing Snowflake connection: {str(e)}")
-        
-    def __enter__(self) -> Session:
-        """Context manager entry"""
-        return self.connect()
-    
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Context manager exit"""
-        self.close()
 
-    def call_model_sql_chat(self,model:str, prompt:str, question:str, temperature:float):
+    def complete(self,model:str, prompt:str, question:str, temperature:float):
+        self.connect()
         command = f"""SELECT SNOWFLAKE.CORTEX.COMPLETE(
         '{model}',
         [
@@ -90,17 +86,16 @@ class SnowflakeConnector:
             'temperature': {temperature}
         }}
         )""".strip()
+        
         res = self.session.sql(command).collect()
         answer = json.loads(res[0][0])["choices"][0]["messages"]
+        self.close()
         return str(answer)
+    
 
-    def comple(self,model,prompt):
-        res = self.session.sql(f"""SELECT SNOWFLAKE.CORTEX.COMPLETE(
-        '{model}',
-        '{prompt}'
-        )""").collect()
-        
-        return res
+@st.cache_resource()
+def get_resource_manager():
+    return SnowflakeConnector()
 
 # Example usage:
 if __name__ == "__main__":
@@ -109,6 +104,5 @@ if __name__ == "__main__":
         connector = SnowflakeConnector()
         connector.connect()
         result = connector.session.sql("SELECT current_version()").collect()
-        print(result)
     except Exception as e:
         print(f"Error: {str(e)}")

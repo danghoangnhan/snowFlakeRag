@@ -4,8 +4,7 @@ from trulens.apps.custom import instrument
 from snowflake.snowpark import Session
 from trulens.core.guardrails.base import context_filter
 from snowflake.core import Root
-
-from connector import SnowflakeConnector
+from src.base.connector import SnowflakeConnector, get_resource_manager
 
 class CortexSearchRetriever:
     def __init__(self, connector: SnowflakeConnector, limit_to_retrieve: int = 4):
@@ -30,7 +29,6 @@ class CortexSearchRetriever:
         )
 
         if resp.results:
-            print(resp.results)
             return {
                 "context_text" : [curr["chunk"] for curr in resp.results],
                 "relative_path": set(item['relative_path'] for item in resp.results)
@@ -39,13 +37,14 @@ class CortexSearchRetriever:
             return {}
 
 class RAG_from_scratch:
-    def __init__(self,connector:SnowflakeConnector,model_name:str = "mistral-large2"):
+    def __init__(self,model_name:str = "mistral-large2"):
+        self.connector    =   get_resource_manager()
+
         self.retriever = CortexSearchRetriever(
-            connector=connector,
+            connector=self.connector,
             limit_to_retrieve=4
         )
         self.model_name =   model_name
-        self.connector    =   connector
         
 
     @instrument
