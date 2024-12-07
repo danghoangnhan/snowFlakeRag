@@ -48,30 +48,11 @@ class ChatMessageView:
                     url_link = df_url_link._get_value(0, 'URL_LINK')
                     st.sidebar.markdown(f"Doc: [{path}]({url_link})")
 
-    def render_sidebar(self):
-        """Render chat sidebar"""
-        st.sidebar.checkbox(
-            'Remember chat history',
-            key="use_chat_history",
-            value=True
-        )
-        st.sidebar.checkbox(
-            'Debug mode',
-            key="debug",
-            value=False
-        )
-        if st.sidebar.button("← Back to Dashboard"):
-            st.session_state.current_chat = None
-            st.rerun()
-        
-        docs_available = self.stage_manager.list_files()
-        with st.sidebar.expander("Available Documents"):
-            st.dataframe(docs_available)
+
 
     def render(self):
         """Render chat interface"""
         st.title(f"💬 {self.chat_session.title}")
-        self.render_sidebar()
         
         for message in self.chat_history.chat_history:
             with st.chat_message(message.role):

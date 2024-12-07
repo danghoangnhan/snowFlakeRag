@@ -20,6 +20,7 @@ class ChatSessionView:
             if key not in st.session_state:
                 st.session_state[key] = value
 
+    @st.dialog("create new chat session")
     def show_create_form(self):
         """Display create new block form"""
         st.markdown("""
@@ -145,8 +146,10 @@ class ChatSessionView:
             # Make the card clickable
             if st.button("Open Chat", key=f"btn_{chat.session_id}", use_container_width=True):
                 st.session_state.current_chat = chat
+                st.session_state.current_view = "chat"
                 st.rerun()
 
+    @st.dialog("delete confirmation")
     def show_delete_confirmation(self, chat: ChatSession):
         """Show delete confirmation dialog"""
         st.markdown(
