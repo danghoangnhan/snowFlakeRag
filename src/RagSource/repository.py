@@ -39,8 +39,9 @@ class RagSourceRepository:
         return results
     
     def get_files(self,session_id: str) -> List[StageFile]:
-        return self.stage_dao.get_stage_files(dir=session_id)
-    
+        result =  self.stage_dao.get_stage_files(dir=session_id)
+        
+        return result
     def remove_file(self,session_id: str,file_name:str):
         return self.stage_dao.remove_file(dir_name=session_id,file_name=file_name)
 

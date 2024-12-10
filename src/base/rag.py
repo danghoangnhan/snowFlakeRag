@@ -43,6 +43,7 @@ class CortexSearchRetriever:
             return SearchResult([], set())
         
         filters = generate_filter("RELATIVE_PATH", self.file_list)
+        print(filters)
         resp = service.search(
            query=query,
            columns=self.COLUMNS,

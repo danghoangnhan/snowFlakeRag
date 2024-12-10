@@ -21,7 +21,9 @@ class SnowflakeStageDAO(BaseDAO):
             files = []
             for row in result:
                 row_dict = {k.lower(): v for k, v in row.asDict().items()}
+                row_dict['name'] = row_dict['name'].split(self.stage_name+'/')[1]
                 files.append(StageFile(**row_dict))
+            
             return files
         except Exception as e:
             self.logger.error(f"Failed to list stage files: {str(e)}")

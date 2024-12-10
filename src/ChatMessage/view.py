@@ -30,8 +30,8 @@ class ChatMessageView:
         self.chat_repo                  = self.chat_repo = ChatRepository()
         self.chat_history               = ChatHistoryManager(data=self.chat_repo.getMessage(chat_session.session_id,limit=slide_window),slide_window=7)
         rag_repo                        = RagSourceRepository()
-        self.file_list                  = rag_repo.get_files(chat_session.session_id)
-        self.rag_service                = RAG_from_scratch(file_list=self.file_list)
+        file_list                       = rag_repo.get_files(chat_session.session_id)
+        self.rag_service                = RAG_from_scratch(file_list=[file.name for file in file_list])
     
     def answer_question(self, question: str) -> Tuple[str, Optional[List[str]]]:
         """Process question through RAG service"""
