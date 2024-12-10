@@ -26,10 +26,11 @@ class StageManager:
             self.logger.error(f"Stage creation failed: {str(e)}")
             return False
 
-    def upload_file(self, file_path) -> bool:
+    def upload_file(self, file_path:str,session_id:str) -> bool:
         try:
             self.connector.session.sql(f"""
-                PUT file://{file_path} @{self.stage_name}
+    def upload_file(self, file_path:str,session_id:str) -> bool:
+                PUT file://{file_path} @{self.stage_name}/{session_id}
                 AUTO_COMPRESS = FALSE
                 OVERWRITE = TRUE
                 """).collect()
@@ -38,12 +39,13 @@ class StageManager:
             self.logger.error(f"Upload failed: {str(e)}")
             return False
 
-    def list_files(self) -> list:
+    def list_files(self,dir) -> list:
         try:
-            return self.connector.session.sql(f"LIST @{self.stage_name}").collect()
+            return self.connector.session.sql(f"LIST @{self.stage_name}/{dir}").collect()
         except Exception as e:
             self.logger.error(f"Listing files failed: {str(e)}")
             return []
+        
     def stage_exists(self) -> bool:
         """
         Check if the stage exists in Snowflake.
@@ -60,40 +62,6 @@ class StageManager:
         except Exception as e:
             self.logger.error(f"Stage existence check failed: {str(e)}")
             return False
-
-    def remove_file(self, file_name: str) -> bool:
-        """
-        Remove a specific file from the Snowflake stage.
-        Args:
-            file_name: Name of the file to remove from the stage
-        Returns:
-            bool: True if removal successful, False otherwise
-        """
-        try:
-            self.connector.session.sql(f"""
-                REMOVE @{self.stage_name}/{file_name}
-            """).collect()
-            return True
-        except Exception as e:
-            self.logger.error(f"File removal failed: {str(e)}")
-            return False
-
-    def remove_all_files(self) -> bool:
-        """
-        Remove all files from the Snowflake stage.
-        Returns:
-            bool: True if removal successful, False otherwise
-        """
-        try:
-            self.connector.session.sql(f"""
-                REMOVE @{self.stage_name}
-            """).collect()
-            return True
-        except Exception as e:
-            self.logger.error(f"Removing all files failed: {str(e)}")
-            return False
-
-
 if __name__ == "__main__":
 
     load_dotenv('envs/dev.env')  # Load environment variables from .env file

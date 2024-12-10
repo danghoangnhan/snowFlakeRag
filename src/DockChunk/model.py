@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import asdict, dataclass
+from typing import Dict, Optional
 
 @dataclass
 class DocChunk:
@@ -14,3 +14,7 @@ class DocChunk:
 class ChunkCount:
     relative_path: str
     chunk_count: int
+
+    def to_dict(self) -> Dict:
+        """Convert ChunkCount to dictionary"""
+        return asdict(self)

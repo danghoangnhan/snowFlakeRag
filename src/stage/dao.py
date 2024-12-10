@@ -12,10 +12,10 @@ class SnowflakeStageDAO(BaseDAO):
         self.stage_name = "docs"
         self.logger = logging.getLogger(__name__)
 
-    def get_stage_files(self) -> List[StageFile]:
+    def get_stage_files(self,dir) -> List[StageFile]:
         """Get list of all files in stage"""
         try:
-            query = f"LIST @{self.stage_name}"
+            query = f"LIST @{self.stage_name}/{dir}"
             result = self.execute_query(query)
             
             files = []
@@ -43,14 +43,14 @@ class SnowflakeStageDAO(BaseDAO):
             self.logger.error(f"Failed to get file URL: {str(e)}")
             return None
 
-    def upload_file(self, file_path: str) -> bool:
+    def upload_file(self, file_path: str,session_id:str) -> bool:
         """Upload file to stage"""
         try:
             file_path = file_path.replace('\\', '/').replace("'", "''")
             
             # file_path = f"'{file_path}'"
             query = f"""
-            PUT 'file://{file_path}' @{self.stage_name}
+            PUT 'file://{file_path}' @{self.stage_name}/{session_id}
             AUTO_COMPRESS = FALSE
             OVERWRITE = TRUE
             """
@@ -60,12 +60,35 @@ class SnowflakeStageDAO(BaseDAO):
             self.logger.error(f"Failed to upload file: {str(e)}")
             return False
 
-    def remove_file(self, file_path: str) -> bool:
-        """Remove file from stage"""
+        
+    def remove_file(self,dir_name:str, file_name: str) -> bool:
+        """
+        Remove a specific file from the Snowflake stage.
+        Args:
+            file_name: Name of the file to remove from the stage
+        Returns:
+            bool: True if removal successful, False otherwise
+        """
         try:
-            query = f"REMOVE @{self.stage_name}/{file_path}"
-            self.execute_query(query)
+            self.connector.session.sql(f"""
+                REMOVE @{self.stage_name}/{dir_name}{file_name}
+            """).collect()
             return True
         except Exception as e:
-            self.logger.error(f"Failed to remove file: {str(e)}")
+            self.logger.error(f"File removal failed: {str(e)}")
+            return False
+
+    def remove_dir(self,dir_name:str) -> bool:
+        """
+        Remove all files from the Snowflake stage.
+        Returns:
+            bool: True if removal successful, False otherwise
+        """
+        try:
+            self.connector.session.sql(f"""
+                REMOVE @{self.stage_name}/{dir_name}
+            """).collect()
+            return True
+        except Exception as e:
+            self.logger.error(f"Removing all files failed: {str(e)}")
             return False

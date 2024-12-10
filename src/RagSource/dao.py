@@ -52,7 +52,7 @@ class RagSourceDAO(BaseDAO):
         return [RagSource(**row) for row in result]
 
 class SessionFileDAO(BaseDAO):
-    def add(self, session_id: str, file_path: str) -> bool:
+    def add(self, session_id: str, file_name: str) -> bool:
         """Link a file to a session"""
         try:
             query = """
