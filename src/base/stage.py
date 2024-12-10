@@ -11,7 +11,6 @@ class StageManager:
 
     def create_stage(self) -> bool:
         try:
-            self.connector.connect()
             self.connector.session.sql(f"""
                 CREATE OR REPLACE STAGE {self.stage_name}
                 ENCRYPTION = (TYPE = 'SNOWFLAKE_SSE')
@@ -29,7 +28,6 @@ class StageManager:
 
     def upload_file(self, file_path) -> bool:
         try:
-            self.connector.connect()
             self.connector.session.sql(f"""
                 PUT file://{file_path} @{self.stage_name}
                 AUTO_COMPRESS = FALSE
@@ -87,7 +85,6 @@ class StageManager:
             bool: True if removal successful, False otherwise
         """
         try:
-            self.connector.connect()
             self.connector.session.sql(f"""
                 REMOVE @{self.stage_name}
             """).collect()

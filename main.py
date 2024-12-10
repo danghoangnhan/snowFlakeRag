@@ -6,16 +6,16 @@ from src.ChatSession.view import ChatSessionView
 from src.ChatMessage.view import ChatMessageView
 from src.RagSource.view import  FileView
 
-def render_sidebar(sessionChat:ChatSession):
+def render_sidebar():
     """Render chat sidebar"""
     # Project navigation
     st.sidebar.subheader("Project Navigation")
                 
-    if st.sidebar.button("💬 Chat Sessions", use_container_width=True):
+    if st.sidebar.button("💬 Chat", use_container_width=True):
         st.session_state.current_view = "chat"
         st.rerun()
                 
-    if st.sidebar.button("🔍 RAG Interface", use_container_width=True):
+    if st.sidebar.button("🔍 RAG", use_container_width=True):
         st.session_state.current_view = "rag"
         st.rerun()
     
@@ -40,14 +40,14 @@ def main():
         if key not in st.session_state:
             st.session_state[key] = value
     if st.session_state.current_chat is not None:
-        render_sidebar(st.session_state.current_chat)
+        render_sidebar()
         if st.session_state.current_view == 'chat':
             chat = ChatMessageView(st.session_state.current_chat)
             chat.render()
         if st.session_state.current_view == 'rag':
             # chat = FileRagView(st.session_state.current_chat)
             # chat.render()
-            file_view = FileView()
+            file_view = FileView(st.session_state.current_chat)
             file_view.render()
     else:
         dashboard.render()

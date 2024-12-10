@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from src.ChatMessage.dao import ChatMessageDAO
 from src.ChatSession.dao import ChatSessionDAO
 from src.ChatSession.model import ChatSession
-from RagSource.dao import RagSourceDAO
+from src.RagSource.dao import RagSourceDAO
 from src.ChatMessage.model import ChatMessage
 class ChatRepository:
     """Repository class to coordinate DAO operations"""

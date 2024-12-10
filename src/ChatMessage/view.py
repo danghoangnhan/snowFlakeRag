@@ -6,6 +6,7 @@ import streamlit as st
 from src.ChatMessage.model import ChatMessage
 from src.ChatSession.model import ChatSession
 from src.ChatSession.repository import ChatRepository
+from src.RagSource.repository import RagSourceRepository
 from src.base.stage import StageManager
 from src.base.rag import RAG_from_scratch
 
@@ -24,17 +25,19 @@ class ChatHistoryManager:
 class ChatMessageView:
     def __init__(self, chat_session:ChatSession,slide_window: int = 7):
         self.chat_session:ChatSession   = chat_session
-        self.rag_service                = RAG_from_scratch()
+        
         self.stage_manager              = StageManager("docs")
         self.chat_repo                  = self.chat_repo = ChatRepository()
-        self.chat_history               = ChatHistoryManager(
-        data=self.chat_repo.getMessage(chat_session.session_id,limit=slide_window),slide_window=7)
-
+        self.chat_history               = ChatHistoryManager(data=self.chat_repo.getMessage(chat_session.session_id,limit=slide_window),slide_window=7)
+        rag_repo                        = RagSourceRepository()
+        self.file_list                  = rag_repo.get_files(chat_session.session_id)
+        self.rag_service                = RAG_from_scratch(file_list=self.file_list)
+    
     def answer_question(self, question: str) -> Tuple[str, Optional[List[str]]]:
         """Process question through RAG service"""
         return self.rag_service.query(
             query=question,
-            history_chat=self.chat_history.get()
+            history_chat=self.chat_history.get(),
         )
 
     def display_related_documents(self, relative_paths: List[str]):
@@ -47,8 +50,6 @@ class ChatMessageView:
                     df_url_link = self.connector.session.sql(cmd).to_pandas()
                     url_link = df_url_link._get_value(0, 'URL_LINK')
                     st.sidebar.markdown(f"Doc: [{path}]({url_link})")
-
-
 
     def render(self):
         """Render chat interface"""
