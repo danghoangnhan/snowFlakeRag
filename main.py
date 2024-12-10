@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 import streamlit as st
 
-from src.ChatSession.model import ChatSession
 from src.ChatSession.view import ChatSessionView
 from src.ChatMessage.view import ChatMessageView
-from src.RagSource.view import  FileView
+from src.RagSource.view import RAGFileView
 
 def render_sidebar():
     """Render chat sidebar"""
@@ -47,7 +46,7 @@ def main():
         if st.session_state.current_view == 'rag':
             # chat = FileRagView(st.session_state.current_chat)
             # chat.render()
-            file_view = FileView(st.session_state.current_chat)
+            file_view = RAGFileView(st.session_state.current_chat)
             file_view.render()
     else:
         dashboard.render()
