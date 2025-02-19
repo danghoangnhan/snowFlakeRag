@@ -37,7 +37,7 @@ class ChatMessageDAO(BaseDAO):
         query = """
         SELECT message_id, session_id, role, content, created_at FROM CHAT_MESSAGES
         WHERE session_id = ?
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
         LIMIT ?
         """
         result = self.execute_query(query, (session_id, limit))

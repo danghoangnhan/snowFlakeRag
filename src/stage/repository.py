@@ -1,4 +1,3 @@
-# src/stage/repository.py
 import logging
 from typing import List, Dict, Optional
 import os

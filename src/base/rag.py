@@ -10,6 +10,10 @@ class SearchResult:
    context_text: List[str]
    relative_paths: set[str]
 
+# generation_prompt = PromptTemplate(
+#     input_variables=["query", "context"],
+#     template="Given the query '{query}' and the context '{context}', generate a response."
+# )
 
 def generate_filter(column_name: str, array: list[str]):
     """
