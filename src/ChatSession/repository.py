@@ -5,7 +5,7 @@ from src.ChatSession.dao import ChatSessionDAO
 from src.ChatSession.model import ChatSession
 from src.RagSource.dao import RagSourceDAO, SessionFileDAO
 from src.ChatMessage.model import ChatMessage
-from stage.dao import SnowflakeStageDAO
+from src.stage.dao import SnowflakeStageDAO
 
 class ChatRepository:
     """Repository class to coordinate DAO operations"""

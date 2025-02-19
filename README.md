@@ -75,28 +75,32 @@ The application will be accessible at:
 
 - Local URL: http://localhost:8501
 - Network URL: http://your-ip-address:8501
+## References for RAG Methods
 
-## Troubleshooting
+- **Self-RAG**: [Retrieval-Augmented Generation: Enhancing LLMs with External Knowledge](https://arxiv.org/abs/2005.11401)
+- **CRAG (Context-Rich Augmented Generation)**: [CRAG: Context-Rich Augmented Generation for Better Retrieval](https://arxiv.org/abs/2301.03634)
+- **Agentic RAG**: [Agentic RAG: Autonomous Reasoning with Retrieval-Augmented Generation](https://arxiv.org/abs/2310.01342)
 
-If you encounter any issues:
+## RAG Performance Comparison
 
-1. Ensure all dependencies are correctly installed:
+| Dataset      | Method  | Hal↑  | Rel↓  | Util↑  |
+|-------------|--------|------|------|------|
+| **PubMedQA**  | Agentic RAG | 0.51  | **0.21*** | **0.16** |
+|              | Self-RAG   | 0.54  | 0.37  | 0.02    |
+|              | CRAG | 0.62  | 0.45  | 0.12    |
+| **HotpotQA** | Agentic RAG | 0.57  | 0.18  | **0.11** |
+|              | Self-RAG   | 0.58  | **0.17**  | 0.09    |
+|              | CRAG | 0.62  | 0.58  | 0.08    |
 
-```bash
-pip list
-```
 
-2. Verify Python version:
 
-```bash
-python3 --version
-```
+**Metrics Explanation:**
 
-3. Check Snowflake connectivity:
+- **AUROC (Hal)**: Higher is better. Measures the ability to predict hallucinated responses.
+- **RMSE (Rel)**: Lower is better. Measures error in predicting context relevance.
+- **Utilization (Util)**: Higher is better. Reflects how well retrieved information is used.
 
-```bash
-python3 -c "import snowflake.connector"
-```
+
 
 ## Additional Resources
 
