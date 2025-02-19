@@ -1,2 +1,9 @@
 envs/dev.env
 __pycache__
+src/ChatSession/__pycache__
+src/ChatMessage/__pycache__
+src/DockChunk/__pycache__
+src/RagSource/__pycache__
+src/stage/__pycache__
+
+
