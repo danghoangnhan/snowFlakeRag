@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS cortex_search_db;
+
+CREATE OR REPLACE WAREHOUSE cortex_search_wh WITH
+   WAREHOUSE_SIZE='X-SMALL';
+
+CREATE OR REPLACE SCHEMA cortex_search_db.services;
