@@ -48,3 +48,13 @@ class ChatMessageDAO(BaseDAO):
             content=row['CONTENT'],
             created_at=row['CREATED_AT']
         ) for row in result]
+    
+    def delete_by_session(self, session_id: str) -> bool:
+        """Soft delete chat session"""
+        query = """
+        UPDATE CHAT_MESSAGES
+        SET is_active = FALSE
+        WHERE session_id = ?
+        """
+        self.execute_query(query, (session_id,))
+        return True

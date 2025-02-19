@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 import uuid
 
 import pandas as pd
@@ -99,6 +99,16 @@ class SessionFileDAO(BaseDAO):
         except Exception as e:
             self.logger.error(f"Failed to remove file from session: {str(e)}")
             return False
+        
+    def delete_by_session_id(self, session_id: str) -> bool:
+        """Soft delete chat session"""
+        query = """
+        UPDATE SESSION_FILES
+        SET is_active = FALSE
+        WHERE session_id = ?
+        """
+        self.execute_query(query, (session_id,))
+        return True
         
     def get_files_details(self, session_id: str) -> pd.DataFrame:
         """Get detailed file information for a session"""

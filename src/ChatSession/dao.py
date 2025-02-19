@@ -76,3 +76,20 @@ class ChatSessionDAO(BaseDAO):
         """
         self.execute_query(query, (session_id,))
         return True
+
+    def get_session_statistics(self, session_id: str) -> Dict:
+        """Get comprehensive session statistics"""
+        query = """
+        SELECT 
+            COUNT(DISTINCT m.message_id) as message_count,
+            COUNT(DISTINCT rs.document_path) as unique_sources,
+            AVG(rs.relevance_score) as avg_relevance,
+            MAX(m.created_at) as last_message
+        FROM CHAT_APP.CHAT_SESSIONS s
+        LEFT JOIN CHAT_APP.CHAT_MESSAGES m ON s.session_id = m.session_id
+        LEFT JOIN CHAT_APP.RAG_SOURCES rs ON m.message_id = rs.message_id
+        WHERE s.session_id = %s
+        GROUP BY s.session_id
+        """
+        self.execute_query(query, (session_id,))
+        return True
